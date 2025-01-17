@@ -2,18 +2,30 @@ import { useState, useEffect } from 'react';
 import './RTU.css';
 
 const RealTimeUpdates = () => {
-  // const [ws, setWs] = useState(null);
-  // const [message, setMessage] = useState('');
   const [clientId, setClientId] = useState('');
   const [gameboard, setGameboard] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/board', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const board = [];
+        while (data.length) board.push(data.splice(0, 5));
+        setGameboard(board);
+      });
+  }, []);
 
   useEffect(() => {
     const websocket = new WebSocket('ws://localhost:8080');
 
     websocket.onopen = () => {
       console.log('WebSocket is connected');
-      // Generate a unique client ID
-      const id = Math.floor(Math.random() * 1000);
+      const id = Math.floor(Math.random() * 1000); // Generate a unique client ID
       setClientId(id);
     };
 
@@ -21,24 +33,26 @@ const RealTimeUpdates = () => {
       const data = JSON.parse(evt.data);
       console.log(data);
 
-      if (data.type === 'UPDATE_BOARD') {
-        data.boardState.map((tile) => {
-          console.log(tile.x_coord, tile.y_coord, tile.entity_type);
-        });
+      switch (data.type) {
+        case 'UPDATE_BOARD': {
+          const board = [];
+          while (data.boardState.length)
+            board.push(data.boardState.splice(0, 5));
+          setGameboard(board);
+          break;
+        }
+        case 'UPDATE_PLAYER_STATS': {
+          console.log('Player stats updated:', data);
+          break;
+        }
+        default:
+          console.log('Unknown message type');
       }
-
-      const board = [];
-      while (data.boardState.length) board.push(data.boardState.splice(0, 5));
-      console.log(board);
-
-      setGameboard(board);
     };
 
     websocket.onclose = () => {
       console.log('WebSocket is closed');
     };
-
-    // setWs(websocket);
   }, []);
 
   // const sendMessage = () => {
@@ -52,60 +66,32 @@ const RealTimeUpdates = () => {
   //     }
   // };
 
-  // const handleInputChange = (event) => {
-  //     setMessage(event.target.value);
-  // };
-  const cellStyle = {
-    border: '1px solid #f00',
-    width: '50px',
-    height: '50px',
-    lineHeight: '50px',
-    textAlign: 'center',
-  };
-
   return (
-    <div>
-      <h1>Real-time Updates with WebSockets - Client {clientId}</h1>
-      <div>
-        <ul id="hexGrid">
-          {gameboard.map((row) =>
-            row.map((tile, index) => (
-              <li className="hex" key={index}>
-                <div className="hexIn">
-                  <a className="hexLink" href="#">
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSFNyDqJM9CMlVXrA2KzW0yFoP9jE2ROcYMw&s"
-                      alt=""
-                    />
-                    <span style={{marginTop: '70px'}}>{tile.x_coord + tile.y_coord + tile.entity_type}</span>
-                  </a>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-        <table id="board">
-          <tbody>
-            {gameboard.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((tile, index) => (
-                  <td key={index}>
-                    <span style={cellStyle}>
-                      {tile.x_coord + tile.y_coord + tile.entity_type}
-                    </span>
-                  </td>
-                ))}
-              </tr>
+    <>
+      <h1>Flattles Command - Player {clientId}</h1>
+      <div className="hex-grid">
+        {gameboard.map((row, rowIndex) => (
+          <div className="hex-row" key={rowIndex}>
+            {row.map((tile, index) => (
+              <div className="hex" key={index}>
+                {tile.entity_type === 'ship' ? (
+                  <img
+                    src="https://media.moddb.com/cache/images/mods/1/27/26387/thumb_620x2000/USS_Enterprise_Refit.png"
+                    alt="USS Enterprise Refit Complete!"
+                    width="70px"
+                    height="50px"
+                  />
+                ) : null}
+                <p style={{ marginTop: '-3px' }}>
+                  {tile.x_coord + tile.y_coord}
+                </p>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        ))}
       </div>
-      {/* <input type="text" value={message}
-            onChange={handleInputChange} />
-          <button onClick={sendMessage}>
-            Send Message
-          </button> */}
-    </div>
+      {/* <button onClick={sendMessage}>Send Message</button> */}
+    </>
   );
 };
 
