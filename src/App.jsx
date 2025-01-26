@@ -1,10 +1,10 @@
 import './App.css'
-import RealTimeUpdates from './RTU'
+import Hexgrid from './Hexgrid'
 
 function App() {
   return (
     <>
-      <RealTimeUpdates />
+      <Hexgrid />
     </>
   )
 }

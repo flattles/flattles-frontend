@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
-import './RTU.css';
+import './Hexgrid.css';
+import {
+  HexGrid,
+  Layout,
+  Hexagon,
+  Text
+} from 'react-hexgrid';
 
-const RealTimeUpdates = () => {
+export default function Hexgrid() {
   const [clientId, setClientId] = useState('');
   const [gameboard, setGameboard] = useState([]);
+  const [shipStats, setShipStats] = useState({});
 
   useEffect(() => {
     fetch('http://localhost:3000/board', {
@@ -15,8 +22,19 @@ const RealTimeUpdates = () => {
       .then((response) => response.json())
       .then((data) => {
         const board = [];
-        while (data.length) board.push(data.splice(0, 5));
+        while (data.length) board.push(data.splice(0, 10));
         setGameboard(board);
+      });
+
+    fetch(`http://localhost:3000/ship?player=1`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setShipStats(data[0]);
       });
   }, []);
 
@@ -37,7 +55,7 @@ const RealTimeUpdates = () => {
         case 'UPDATE_BOARD': {
           const board = [];
           while (data.boardState.length)
-            board.push(data.boardState.splice(0, 5));
+            board.push(data.boardState.splice(0, 10));
           setGameboard(board);
           break;
         }
@@ -62,7 +80,6 @@ const RealTimeUpdates = () => {
   //             payload: message,
   //             clientId: clientId
   //         }));
-  //         setMessage('');
   //     }
   // };
 
@@ -90,9 +107,26 @@ const RealTimeUpdates = () => {
           </div>
         ))}
       </div>
+      <HexGrid width={1000} height={800}>
+        <Layout size={{ x: 5, y: 5 }} flat={true} spacing={1.1} origin={{ x: -35, y: -40 }}>
+          {gameboard.map((row, rowIndex) => (
+            <>
+              {row.map((tile, index) => (
+                  <Hexagon key={index} q={rowIndex} r={Math.floor(-rowIndex/2) + index}>
+                    <Text>{tile.x_coord + tile.y_coord}</Text>
+                  </Hexagon>
+              ))}
+            </>
+          ))}
+        </Layout>
+      </HexGrid>
+      {shipStats && (
+        <div>
+          <h2>{shipStats.name}</h2>
+          <p>Health: {shipStats.health}, Speed: {shipStats.speed}, Damage: {shipStats.damage}, Range: {shipStats.range}</p>
+        </div>
+      )}
       {/* <button onClick={sendMessage}>Send Message</button> */}
     </>
   );
 };
-
-export default RealTimeUpdates;
