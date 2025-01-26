@@ -29,8 +29,8 @@ body {
   /* width: 100px;
   height: 80px;
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); */
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 85px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   margin: 2px;
   border: '2px solid red';
@@ -42,12 +42,12 @@ body {
 }
 
 .hex-row:nth-child(even) {
-  margin-left: 104px;
+  margin-left: 84px;
   /* margin-top: 42px; */
 }
 
 .hex-row:not(:last-child) {
-  margin-top: -25px;
+  margin-top: -22px;
   /* margin-left: -25px; */
 }
 
@@ -82,7 +82,7 @@ img {
   -webkit-user-drag: element;
   -khtml-user-drag: element;
   user-drag: element;
-} */
+}
 
 svg g {
   fill: #3f51b5;
@@ -113,4 +113,4 @@ svg path {
   stroke-opacity: 0.3;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
+} */

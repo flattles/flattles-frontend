@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
+// import { HexGrid, Layout, Hexagon, Text } from 'react-hexgrid';
+import Attack from './Attack';
+import Stats from './Stats';
+import ship from './assets/enterprise.png';
 import './Hexgrid.css';
-import {
-  HexGrid,
-  Layout,
-  Hexagon,
-  Text
-} from 'react-hexgrid';
 
 export default function Hexgrid() {
-  const [clientId, setClientId] = useState('');
   const [gameboard, setGameboard] = useState([]);
-  const [shipStats, setShipStats] = useState({});
+
+  const [searchParams] = useSearchParams();
+  const player = Number(searchParams.get('player'));
 
   useEffect(() => {
     fetch('http://localhost:3000/board', {
@@ -25,26 +25,13 @@ export default function Hexgrid() {
         while (data.length) board.push(data.splice(0, 10));
         setGameboard(board);
       });
-
-    fetch(`http://localhost:3000/ship?player=1`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setShipStats(data[0]);
-      });
-  }, []);
+  }, [player]);
 
   useEffect(() => {
     const websocket = new WebSocket('ws://localhost:8080');
 
     websocket.onopen = () => {
       console.log('WebSocket is connected');
-      const id = Math.floor(Math.random() * 1000); // Generate a unique client ID
-      setClientId(id);
     };
 
     websocket.onmessage = (evt) => {
@@ -73,19 +60,9 @@ export default function Hexgrid() {
     };
   }, []);
 
-  // const sendMessage = () => {
-  //     if (ws) {
-  //         ws.send(JSON.stringify({
-  //             type: 'message',
-  //             payload: message,
-  //             clientId: clientId
-  //         }));
-  //     }
-  // };
-
   return (
     <>
-      <h1>Flattles Command - Player {clientId}</h1>
+      <h1>Flattles Command - Player {player}</h1>
       <div className="hex-grid">
         {gameboard.map((row, rowIndex) => (
           <div className="hex-row" key={rowIndex}>
@@ -93,13 +70,13 @@ export default function Hexgrid() {
               <div className="hex" key={index}>
                 {tile.entity_type === 'ship' ? (
                   <img
-                    src="https://media.moddb.com/cache/images/mods/1/27/26387/thumb_620x2000/USS_Enterprise_Refit.png"
+                    src={ship}
                     alt="USS Enterprise Refit Complete!"
                     width="70px"
                     height="50px"
                   />
                 ) : null}
-                <p style={{ marginTop: '-3px' }}>
+                <p style={{ marginTop: '-22px' }}>
                   {tile.x_coord + tile.y_coord}
                 </p>
               </div>
@@ -107,7 +84,9 @@ export default function Hexgrid() {
           </div>
         ))}
       </div>
-      <HexGrid width={1000} height={800}>
+      <Stats player={player} />
+      <Attack player={player} />
+      {/* <HexGrid width={1000} height={800}>
         <Layout size={{ x: 5, y: 5 }} flat={true} spacing={1.1} origin={{ x: -35, y: -40 }}>
           {gameboard.map((row, rowIndex) => (
             <>
@@ -119,14 +98,7 @@ export default function Hexgrid() {
             </>
           ))}
         </Layout>
-      </HexGrid>
-      {shipStats && (
-        <div>
-          <h2>{shipStats.name}</h2>
-          <p>Health: {shipStats.health}, Speed: {shipStats.speed}, Damage: {shipStats.damage}, Range: {shipStats.range}</p>
-        </div>
-      )}
-      {/* <button onClick={sendMessage}>Send Message</button> */}
+      </HexGrid> */}
     </>
   );
-};
+}
