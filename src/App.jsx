@@ -1,16 +1,14 @@
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import PlayerSelect from './PlayerSelect'
-import Hexgrid from './Hexgrid'
+import PlayerHUD from './PlayerHUD'
+import './App.css'
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<PlayerSelect />} />
-        <Route path="/hexgrid" element={<Hexgrid />} />
-      </Routes>
-    </BrowserRouter>
-  )
-}
-
-export default App
+createRoot(document.getElementById('root')).render(
+  <BrowserRouter>
+  <Routes>
+    <Route path="/" element={<PlayerSelect />} />
+    <Route path="/hud" element={<PlayerHUD />} />
+  </Routes>
+</BrowserRouter>,
+)

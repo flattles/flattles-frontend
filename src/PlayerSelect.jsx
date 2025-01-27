@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-
-const players = [1, 2, 3, 4];
+import { players } from '../env';
 
 export default function PlayerSelect() {
   const [selectedPlayer, setSelectedPlayer] = useState(players[0]);
@@ -12,7 +11,7 @@ export default function PlayerSelect() {
   };
 
   const handleConfirm = () => {
-    navigate(`/hexgrid?player=${selectedPlayer}`);
+    navigate(`/hud?player=${selectedPlayer}`);
   };
 
   return (

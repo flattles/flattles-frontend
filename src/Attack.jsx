@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-
-const players = [1, 2, 3, 4];
+import { players } from '../env';
 
 export default function Attack(props) {
-  const player = props.player;
+  const  { player } = props;
   const filteredPlayers = players.filter((p) => p !== player);
   const [selectedPlayer, setSelectedPlayer] = useState(filteredPlayers[0]);
 

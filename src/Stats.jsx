@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 
-export default function Stats(prop) {
-  const player = prop.player;
+export default function Stats(props) {
+  const  { player } = props;
   const [stats, setStats] = useState({});
 
   useEffect(() => {
