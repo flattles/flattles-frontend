@@ -1,22 +1,10 @@
-import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
+import { mockShipData } from "../mockData";
 
 export default function Stats(props) {
   const  { player } = props;
-  const [stats, setStats] = useState({});
-
-  useEffect(() => {
-    fetch(`http://localhost:3000/ship?player=${player}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setStats(data[0]);
-      });
-  }, [player]);
+  
+  const stats = mockShipData.find((ship) => ship.player === player);
 
   return (
     <div>
