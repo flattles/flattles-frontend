@@ -26,7 +26,7 @@ export default function PlayerHUD() {
   }, [player]);
 
   useEffect(() => {
-    const websocket = new WebSocket(`ws://${import.meta.env.VITE_MIDDLEWARE_URI}`);
+    const websocket = new WebSocket(`wss://${import.meta.env.VITE_MIDDLEWARE_URI}`);
 
     websocket.onopen = () => {
       console.log('WebSocket is connected');
