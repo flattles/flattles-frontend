@@ -6,7 +6,7 @@ export default function Stats(props) {
   const [stats, setStats] = useState({});
 
   useEffect(() => {
-    fetch(`http://localhost:3000/ship?player=${player}`, {
+    fetch(`https://${import.meta.env.VITE_MIDDLEWARE_URI}/ship?player=${player}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

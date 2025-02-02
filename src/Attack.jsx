@@ -12,7 +12,7 @@ export default function Attack(props) {
   };
 
   const sendMessage = () => {
-    fetch('http://localhost:3000/attack', {
+    fetch(`https://${import.meta.env.VITE_MIDDLEWARE_URI}/attack`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

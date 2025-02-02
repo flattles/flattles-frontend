@@ -11,7 +11,7 @@ export default function PlayerHUD() {
   const player = Number(searchParams.get('player'));
 
   useEffect(() => {
-    fetch('http://localhost:3000/board', {
+    fetch(`https://${import.meta.env.VITE_MIDDLEWARE_URI}/board`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export default function PlayerHUD() {
   }, [player]);
 
   useEffect(() => {
-    const websocket = new WebSocket('ws://localhost:8080');
+    const websocket = new WebSocket(`ws://${import.meta.env.VITE_MIDDLEWARE_URI}`);
 
     websocket.onopen = () => {
       console.log('WebSocket is connected');
