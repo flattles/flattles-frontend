@@ -1,22 +1,7 @@
-import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 
 export default function Stats(props) {
-  const  { player } = props;
-  const [stats, setStats] = useState({});
-
-  useEffect(() => {
-    fetch(`https://${import.meta.env.VITE_MIDDLEWARE_URI}/ship?player=${player}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setStats(data[0]);
-      });
-  }, [player]);
+  const  { stats } = props;
 
   return (
     <div>
@@ -30,5 +15,5 @@ export default function Stats(props) {
 }
 
 Stats.propTypes = {
-  player: PropTypes.number.isRequired,
+  stats: PropTypes.object.isRequired,
 };

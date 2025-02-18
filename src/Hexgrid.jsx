@@ -3,7 +3,7 @@ import ship from './assets/enterprise.png';
 import './Hexgrid.css';
 
 export default function Hexgrid(props) {
-  const  { player, gameboard } = props;
+  const { player, gameboard, rangeBoard } = props;
 
   return (
     <>
@@ -21,9 +21,15 @@ export default function Hexgrid(props) {
                     height="50px"
                   />
                 ) : null}
-                <p style={{ marginTop: '-22px' }}>
-                  {tile.x_coord + tile.y_coord}
-                </p>
+                {rangeBoard.includes(tile.x_coord + tile.y_coord) ? (
+                  <p style={{ marginTop: '-22px', color: 'red' }}>
+                    {tile.x_coord + tile.y_coord}
+                  </p>
+                ) : (
+                  <p style={{ marginTop: '-22px' }}>
+                    {tile.x_coord + tile.y_coord}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -36,4 +42,5 @@ export default function Hexgrid(props) {
 Hexgrid.propTypes = {
   player: PropTypes.number.isRequired,
   gameboard: PropTypes.array.isRequired,
+  rangeBoard: PropTypes.array.isRequired,
 };

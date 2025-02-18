@@ -1,25 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { players } from '../env';
 
 export default function Attack(props) {
-  const  { player } = props;
-  const filteredPlayers = players.filter((p) => p !== player);
-  const [selectedPlayer, setSelectedPlayer] = useState(filteredPlayers[0]);
+  const { player, detectedShips } = props;
+  const [selectedPlayer, setSelectedPlayer] = useState(0);
+
+  useEffect(() => {
+    if (detectedShips.length > 0) {
+      setSelectedPlayer(detectedShips[0].player);
+    }
+  }, [detectedShips]);
 
   const handleSelectionChange = (event) => {
     setSelectedPlayer(event.target.value);
   };
 
-  const sendMessage = () => {
-    fetch(`https://${import.meta.env.VITE_MIDDLEWARE_URI}/attack`, {
+  const sendAttack = (target) => {
+    fetch(`http${import.meta.env.VITE_MIDDLEWARE_URI}/attack`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         player: player,
-        target: '1',
+        target: target,
       }),
     });
   };
@@ -27,17 +31,21 @@ export default function Attack(props) {
   return (
     <>
       <select value={selectedPlayer} onChange={handleSelectionChange}>
-        {filteredPlayers.map((player) => (
-          <option key={player} value={player}>
-            Player {player}
+        <option disabled value={0}>
+          Select a ship
+        </option>
+        {detectedShips.map((ship, index) => (
+          <option key={index} value={ship.player}>
+            Player {ship.player} - {ship.tile}
           </option>
         ))}
       </select>
-      <button onClick={sendMessage}>Fire</button>
+      <button onClick={() => sendAttack(selectedPlayer)}>Fire</button>
     </>
   );
-};
+}
 
 Attack.propTypes = {
   player: PropTypes.number.isRequired,
+  detectedShips: PropTypes.array.isRequired,
 };
