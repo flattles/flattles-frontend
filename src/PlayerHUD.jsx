@@ -10,10 +10,10 @@ export default function PlayerHUD() {
   const player = Number(searchParams.get('player'));
 
   const [gameboard, setGameboard] = useState([]);
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState({ ships: [], bases: [] });
 
   useEffect(() => {
-    fetch(`http${import.meta.env.VITE_MIDDLEWARE_URI}/ship?player=${player}`, {
+    fetch(`http${import.meta.env.VITE_MIDDLEWARE_URI}/stats`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -21,9 +21,9 @@ export default function PlayerHUD() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setStats(data[0]);
+        setStats(data);
       });
-  }, [player]);
+  }, []);
 
   useEffect(() => {
     fetch(`http${import.meta.env.VITE_MIDDLEWARE_URI}/board`, {
@@ -41,9 +41,7 @@ export default function PlayerHUD() {
   }, [player]);
 
   useEffect(() => {
-    const websocket = new WebSocket(
-      `ws${import.meta.env.VITE_MIDDLEWARE_URI}`
-    );
+    const websocket = new WebSocket(`ws${import.meta.env.VITE_MIDDLEWARE_URI}`);
 
     websocket.onopen = () => {
       console.log('WebSocket is connected');
@@ -62,9 +60,7 @@ export default function PlayerHUD() {
           break;
         }
         case 'UPDATE_STATS': {
-          if (data.player === player) {
-            setStats(data.stats);
-          }
+          setStats(data.stats);
           break;
         }
         default:
@@ -77,31 +73,50 @@ export default function PlayerHUD() {
     };
   }, [player]);
 
-  let rangeBoard = [];
-  let detectedShips = [];
+  let playerStats = stats.ships.find((s) => s.player === player) || {};
 
-  if (gameboard.length != 0 && stats) {
+  let rangeBoard = [];
+  let detectedEntities = [];
+
+  if (gameboard.length != 0 && playerStats) {
     let position = gameboard
       .flat()
       .find((t) => t.entity_type === 'ship' && t.entity_id === player);
 
-    rangeBoard = getHexesWithinRange(position.x_coord, position.y_coord, stats.range);
+    rangeBoard = getHexesWithinRange(
+      position.x_coord,
+      position.y_coord,
+      playerStats.range
+    );
+
     for (let space of rangeBoard) {
       const tile = gameboard
         .flat()
         .find((t) => t.x_coord + t.y_coord === space);
 
-      if (tile.entity_type === 'ship' && tile.entity_id !== player) {
-        detectedShips.push({tile: space, player: tile.entity_id});
+      if (
+        tile.entity_id !== player &&
+        (tile.entity_type === 'ship' || tile.entity_type === 'base')
+      ) {
+        detectedEntities.push({
+          tile: space,
+          player: tile.entity_id,
+          type: tile.entity_type,
+        });
       }
     }
   }
 
   return (
     <>
-      <Hexgrid player={player} gameboard={gameboard} rangeBoard={rangeBoard} />
-      <Stats stats={stats} />
-      <Attack player={player} detectedShips={detectedShips} />
+      <Hexgrid
+        player={player}
+        gameboard={gameboard}
+        rangeBoard={rangeBoard}
+        boardStats={stats}
+      />
+      <Stats stats={playerStats} />
+      <Attack player={player} detectedEntities={detectedEntities} />
     </>
   );
 }

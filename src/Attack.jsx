@@ -2,20 +2,26 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 export default function Attack(props) {
-  const { player, detectedShips } = props;
-  const [selectedPlayer, setSelectedPlayer] = useState(0);
+  const { player, detectedEntities } = props;
+  const [selectedEntity, setSelectedEntity] = useState(0);
 
   useEffect(() => {
-    if (detectedShips.length > 0) {
-      setSelectedPlayer(detectedShips[0].player);
+    if (detectedEntities.length > 0) {
+      setSelectedEntity(`${detectedEntities[0].player},${detectedEntities[0].type}`);
     }
-  }, [detectedShips]);
+  }, [detectedEntities]);
 
   const handleSelectionChange = (event) => {
-    setSelectedPlayer(event.target.value);
+    setSelectedEntity(event.target.value);
   };
 
   const sendAttack = (target) => {
+    if (target === 0) {
+      return;
+    }
+
+    let [targetPlayer, targetType] = target.split(',');
+    
     fetch(`http${import.meta.env.VITE_MIDDLEWARE_URI}/attack`, {
       method: 'POST',
       headers: {
@@ -23,29 +29,30 @@ export default function Attack(props) {
       },
       body: JSON.stringify({
         player: player,
-        target: target,
+        target: targetPlayer,
+        type: targetType
       }),
     });
   };
 
   return (
     <>
-      <select value={selectedPlayer} onChange={handleSelectionChange}>
+      <select value={selectedEntity} onChange={handleSelectionChange}>
         <option disabled value={0}>
-          Select a ship
+          Select an entity
         </option>
-        {detectedShips.map((ship, index) => (
-          <option key={index} value={ship.player}>
-            Player {ship.player} - {ship.tile}
+        {detectedEntities.map((entity, index) => (
+          <option key={index} value={`${entity.player},${entity.type}`}>
+            Player {entity.player} {entity.type.charAt(0).toUpperCase() + entity.type.slice(1)} - {entity.tile}
           </option>
         ))}
       </select>
-      <button onClick={() => sendAttack(selectedPlayer)}>Fire</button>
+      <button onClick={() => sendAttack(selectedEntity)}>Fire</button>
     </>
   );
 }
 
 Attack.propTypes = {
   player: PropTypes.number.isRequired,
-  detectedShips: PropTypes.array.isRequired,
+  detectedEntities: PropTypes.array.isRequired,
 };

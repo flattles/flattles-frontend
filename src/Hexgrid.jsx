@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import ship from './assets/enterprise.png';
+import base from './assets/base.png';
 import './Hexgrid.css';
 
 export default function Hexgrid(props) {
-  const { player, gameboard, rangeBoard } = props;
+  const { player, gameboard, rangeBoard, boardStats } = props;
 
   return (
     <>
@@ -15,8 +16,30 @@ export default function Hexgrid(props) {
               <div className="hex" key={index}>
                 {tile.entity_type === 'ship' ? (
                   <img
+                    className={
+                      boardStats.ships.health &&
+                      boardStats.ships.find((s) => s.player === tile.entity_id)
+                        .health <= 0
+                        ? 'destroyed'
+                        : 'ship'
+                    }
                     src={ship}
-                    alt="USS Enterprise Refit Complete!"
+                    alt="Player Ship"
+                    width="70px"
+                    height="50px"
+                  />
+                ) : null}
+                {tile.entity_type === 'base' ? (
+                  <img
+                    className={
+                      boardStats.ships.health &&
+                      boardStats.ships.find((s) => s.player === tile.entity_id)
+                        .health <= 0
+                        ? 'destroyed'
+                        : ''
+                    }
+                    src={base}
+                    alt="Player Base"
                     width="70px"
                     height="50px"
                   />
@@ -43,4 +66,5 @@ Hexgrid.propTypes = {
   player: PropTypes.number.isRequired,
   gameboard: PropTypes.array.isRequired,
   rangeBoard: PropTypes.array.isRequired,
+  boardStats: PropTypes.object.isRequired,
 };

@@ -56,9 +56,13 @@ body {
   margin-left: -25px;
 } */
 
-img {
+.ship {
   animation: blink 1s;
   animation-iteration-count: infinite;
+}
+
+.destroyed {
+  filter: grayscale(100%) brightness(60%) sepia(100%) saturate(500%) hue-rotate(-10deg);
 }
 
 @keyframes blink {
