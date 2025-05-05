@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { players } from '../env';
 
 export default function Attack(props) {
-  const  { player } = props;
+  const { player } = props;
   const filteredPlayers = players.filter((p) => p !== player);
   const [selectedPlayer, setSelectedPlayer] = useState(filteredPlayers[0]);
 
   const handleSelectionChange = (event) => {
-    setSelectedPlayer(event.target.value);
+    setSelectedPlayer(Number(event.target.value));
   };
 
   const sendMessage = () => {
@@ -19,24 +19,26 @@ export default function Attack(props) {
       },
       body: JSON.stringify({
         player: player,
-        target: '1',
+        target: selectedPlayer, 
       }),
     });
+    alert(`Player ${player} attacked Player ${selectedPlayer}!`); 
   };
 
   return (
-    <>
+    <div className="attack-interface"> {/* Container for styling */}
+      <h3>Initiate Attack</h3>
       <select value={selectedPlayer} onChange={handleSelectionChange}>
-        {filteredPlayers.map((player) => (
-          <option key={player} value={player}>
-            Player {player}
+        {filteredPlayers.map((target) => (
+          <option key={target} value={target}>
+            Target Player {target}
           </option>
         ))}
       </select>
-      <button onClick={sendMessage}>Fire</button>
-    </>
+      <button onClick={sendMessage} className="attack-button">FIRE!</button>
+    </div>
   );
-};
+}
 
 Attack.propTypes = {
   player: PropTypes.number.isRequired,

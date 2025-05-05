@@ -6,30 +6,27 @@ export default function Hexgrid(props) {
   const  { player, gameboard } = props;
 
   return (
-    <>
-      <h1>Flattles Command - Player {player}</h1>
-      <div className="hex-grid">
-        {gameboard.map((row, rowIndex) => (
-          <div className="hex-row" key={rowIndex}>
-            {row.map((tile, index) => (
-              <div className="hex" key={index}>
-                {tile.entity_type === 'ship' ? (
-                  <img
-                    src={ship}
-                    alt="USS Enterprise Refit Complete!"
-                    width="70px"
-                    height="50px"
-                  />
-                ) : null}
-                <p style={{ marginTop: '-22px' }}>
-                  {tile.x_coord + tile.y_coord}
-                </p>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </>
+    <div className="hex-grid">
+      {gameboard.map((row, rowIndex) => (
+        <div className="hex-row" key={rowIndex}>
+          {row.map((tile, index) => (
+            <div className="hex" key={index}>
+              {tile.entity_type === 'ship' ? (
+                <img
+                  src={ship}
+                  alt="USS Enterprise Refit Complete!"
+                  width="70px"
+                  height="50px"
+                />
+              ) : null}
+              <p style={{ marginTop: '-22px' }}>
+                {tile.x_coord + tile.y_coord}
+              </p>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
 
