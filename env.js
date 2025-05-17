@@ -1,3 +1,3 @@
-const players = [1, 2, 3, 4];
+const players = [1, 2, 3];
 
 export { players };

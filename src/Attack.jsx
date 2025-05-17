@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import boom from './assets/boom.mp3';
 
 export default function Attack(props) {
   const { player, detectedEntities } = props;
+  const audioRef = useRef(null);
   const [selectedEntity, setSelectedEntity] = useState(0);
 
   useEffect(() => {
@@ -32,11 +34,21 @@ export default function Attack(props) {
         target: targetPlayer,
         type: targetType
       }),
+    }).then((response) => {
+      if (response.ok) {
+        if (audioRef.current) {
+          audioRef.current.play();
+        }
+      }
+    }
+    ).catch((error) => {
+      console.error(error);
     });
   };
 
   return (
-    <>
+    <div className="attack-interface">
+      <h3>Initiate Attack</h3>
       <select value={selectedEntity} onChange={handleSelectionChange}>
         <option disabled value={0}>
           Select an entity
@@ -47,8 +59,9 @@ export default function Attack(props) {
           </option>
         ))}
       </select>
-      <button onClick={() => sendAttack(selectedEntity)}>Fire</button>
-    </>
+      <audio src={boom} ref={audioRef} />
+      <button className='attack-button' onClick={() => sendAttack(selectedEntity)}>FIRE!</button>
+    </div>
   );
 }
 

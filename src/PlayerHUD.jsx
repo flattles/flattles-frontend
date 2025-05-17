@@ -73,9 +73,15 @@ export default function PlayerHUD() {
     };
   }, [player]);
 
-  let playerStats = stats.ships.find((s) => s.player === player) || {};
+  let shipStats = stats.ships.find((s) => s.player === player) || {};
+  let baseStats = stats.bases.find((b) => b.player === player) || {};
+  let playerStats = {};
+  if (shipStats &&  baseStats) {
+    playerStats = { ship: shipStats, base: baseStats };
+  }
 
   let rangeBoard = [];
+  let moveBoard = [];
   let detectedEntities = [];
 
   if (gameboard.length != 0 && playerStats) {
@@ -86,8 +92,33 @@ export default function PlayerHUD() {
     rangeBoard = getHexesWithinRange(
       position.x_coord,
       position.y_coord,
-      playerStats.range
+      playerStats.ship.range
     );
+    // rangeBoard = rangeBoard.filter((space) => {
+    //   const tile = gameboard
+    //     .flat()
+    //     .find((t) => t.x_coord + t.y_coord === space);
+    //   return (
+    //     tile.entity_id !== player
+    //   );
+    // });
+
+    moveBoard = getHexesWithinRange(
+      position.x_coord,
+      position.y_coord,
+      playerStats.ship.speed
+    );
+    // moveBoard = moveBoard.filter((space) => {
+    //   const tile = gameboard
+    //     .flat()
+    //     .find((t) => t.x_coord + t.y_coord === space);
+    //   return (
+    //     tile.entity_type !== 'ship' &&
+    //     tile.entity_type !== 'base' &&
+    //     tile.entity_id !== player
+    //   );
+    // });
+
 
     for (let space of rangeBoard) {
       const tile = gameboard
@@ -96,7 +127,8 @@ export default function PlayerHUD() {
 
       if (
         tile.entity_id !== player &&
-        (tile.entity_type === 'ship' || tile.entity_type === 'base')
+        (tile.entity_type === 'ship' || tile.entity_type === 'base') && 
+        (stats[`${tile.entity_type}s`].find((e) => e.player === tile.entity_id).health !== 0)
       ) {
         detectedEntities.push({
           tile: space,
@@ -109,14 +141,25 @@ export default function PlayerHUD() {
 
   return (
     <>
-      <Hexgrid
-        player={player}
-        gameboard={gameboard}
-        rangeBoard={rangeBoard}
-        boardStats={stats}
-      />
-      <Stats stats={playerStats} />
-      <Attack player={player} detectedEntities={detectedEntities} />
+      <div className="hud-top">
+        <h1>Flattles Command</h1>
+      </div>
+      <div className="player-hud">
+        <div className="hud-middle">
+          <Hexgrid
+            gameboard={gameboard}
+            rangeBoard={rangeBoard}
+            moveBoard={moveBoard}
+            boardStats={stats}
+          />
+        </div>
+
+        <div className="hud-bottom">
+          <h2>Player {player}</h2>
+          <Stats stats={playerStats} />
+          <Attack player={player} detectedEntities={detectedEntities} />
+        </div>
+      </div>
     </>
   );
 }
