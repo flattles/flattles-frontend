@@ -19,7 +19,6 @@ export default function Hexgrid(props) {
                   : { backgroundColor: 'rgba(0, 255, 145, 0.273)' }
               }
             >
-              {console.log(boardStats.ships.find((s) => s.player === tile.entity_id))}
               {tile.entity_type === 'ship' ? (
                 <img
                   className={
